@@ -2,6 +2,7 @@ from pytube import Playlist
 from pytube.exceptions import AgeRestrictedError, VideoPrivate
 from tqdm import tqdm
 import re
+from http.client import IncompleteRead
 
 def replace_special_characters(input_string):
     pattern = r'[^a-zA-Z0-9_]'
@@ -31,6 +32,9 @@ with tqdm(total=len(yt_playlist.videos), desc="Downloading", unit="video") as pb
             print(f'{i + 1}/{total_videos} videos downloaded')
         except AgeRestrictedError:
             print("Skipping age-restricted video:", title)
+        except IncompleteRead:
+            # Try again
+            continue
         except VideoPrivate:
             print("Skipping private video", title)
         pbar.update(1)
